@@ -2,26 +2,17 @@ import React from 'react'
 import ReactDataGrid from 'react-data-grid'
 import 'bootstrap/dist/css/bootstrap.css'
 
-class RowNumberFormatter extends React.Component {
-  render () {
-    return (
-      <span style={{ color: '#BBB', fontSize: 'smaller' }}>
-        {this.props.value}
-      </span>)
-  }
-}
+import './ReactDataGridSpreadsheet.css'
 
 export default class ReactDataGridSpreadsheet extends React.Component {
   constructor (props, context) {
     super(props, context)
-    this.createRows()
     this._columns = [
       {
         key: 'id',
         name: '',
         resizable: false,
-        width: 50,
-        formatter: RowNumberFormatter
+        width: 50
       },
       {
         key: 'player',
@@ -79,10 +70,13 @@ export default class ReactDataGridSpreadsheet extends React.Component {
       }
     ]
 
-    this.state = null
+    this.state = {
+      cols: this._columns,
+      rows: this.createRows()
+    }
 
-    this.createRows = this.createRows.bind(this)
-    this.rowGetter = this.rowGetter.bind(this)
+    this.getRow = this.getRow.bind(this)
+    this.onGridRowsUpdated = this.onGridRowsUpdated.bind(this)
   }
 
   createRows () {
@@ -102,18 +96,32 @@ export default class ReactDataGridSpreadsheet extends React.Component {
       })
     }
 
-    this._rows = rows
+    return rows
   };
 
-  rowGetter (i) {
-    return this._rows[i]
+  getRow (i) {
+    return this.state.rows[i]
   };
+
+  onGridRowsUpdated ({fromRow, toRow, updated}) {
+    console.log(fromRow, toRow, updated)
+    let rows = this.state.rows.slice()
+
+    for (let i = fromRow; i <= toRow; i++) {
+      let updatedRow = { ...rows[i], ...updated }
+      rows[i] = updatedRow
+    }
+
+    this.setState({ rows })
+  }
 
   render () {
     return (
       <ReactDataGrid
-        columns={this._columns}
-        rowGetter={this.rowGetter}
-        rowsCount={this._rows.length} />)
+        columns={this.state.cols}
+        rowGetter={this.getRow}
+        rowsCount={this.state.rows.length}
+        enableCellSelect
+        onGridRowsUpdated={this.onGridRowsUpdated} />)
   }
 }

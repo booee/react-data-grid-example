@@ -1,0 +1,10 @@
+.react-grid-Cell:first-child {
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #DDD;
+  border-right: 1px solid #DDD;
+  text-align: right;
+}
+
+.react-grid-HeaderCell {
+  font-weight: 400;
+}

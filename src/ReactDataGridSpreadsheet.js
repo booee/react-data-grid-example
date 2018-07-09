@@ -1,8 +1,26 @@
 import React from 'react'
 import ReactDataGrid from 'react-data-grid'
-import 'bootstrap/dist/css/bootstrap.css'
+import { Editors, Formatters } from 'react-data-grid-addons'
 
+import DateCell from './DateCell'
+
+import 'bootstrap/dist/css/bootstrap.css'
+import 'react-datepicker/dist/react-datepicker.css'
 import './ReactDataGridSpreadsheet.css'
+
+const teams = [
+  { id: 'fl', value: 'fl', text: 'Florida' },
+  { id: 'ga', value: 'ga', text: 'Georgia' },
+  { id: 'sc', value: 'sc', text: 'South Carolina' },
+  { id: 'nc', value: 'nc', text: 'North Carolina' }
+]
+
+const positions = [
+  { id: 'qb', value: 'qb', text: 'Quarterback' },
+  { id: 'rb', value: 'rb', text: 'Running Back' },
+  { id: 'wr', value: 'wr', text: 'Wide Receiver' },
+  { id: 'te', value: 'te', text: 'Tight End' }
+]
 
 export default class ReactDataGridSpreadsheet extends React.Component {
   constructor (props, context) {
@@ -21,16 +39,28 @@ export default class ReactDataGridSpreadsheet extends React.Component {
         editable: true
       },
       {
+        key: 'dob',
+        name: 'DOB',
+        resizable: true,
+        editable: true,
+        editor: DateCell.Editor,
+        formatter: DateCell.Formatter
+      },
+      {
         key: 'team',
         name: 'Team',
         resizable: true,
-        editable: true
+        editable: true,
+        editor: <Editors.DropDownEditor options={teams} />,
+        formatter: <Formatters.DropDownFormatter options={teams} value='ga' />
       },
       {
         key: 'position',
         name: 'Position',
         resizable: true,
-        editable: true
+        editable: true,
+        editor: <Editors.DropDownEditor options={positions} />,
+        formatter: <Formatters.DropDownFormatter options={positions} value='wr' />
       },
       {
         key: 'offense',
@@ -85,8 +115,9 @@ export default class ReactDataGridSpreadsheet extends React.Component {
       rows.push({
         id: i,
         player: 'Jim Bob',
-        team: 'Florida',
-        position: 'QB',
+        dob: '01-01-2000',
+        team: 'sc',
+        position: 'qb',
         offense: 'Y',
         gamesPlayed: '35',
         gamesStarted: '35',
@@ -104,12 +135,13 @@ export default class ReactDataGridSpreadsheet extends React.Component {
   };
 
   onGridRowsUpdated ({fromRow, toRow, updated}) {
-    console.log(fromRow, toRow, updated)
-    let rows = this.state.rows.slice()
+    // console.log('row updated', updated)
+    const rows = this.state.rows
 
     for (let i = fromRow; i <= toRow; i++) {
       let updatedRow = { ...rows[i], ...updated }
       rows[i] = updatedRow
+      console.log('updated row ' + i, updatedRow)
     }
 
     this.setState({ rows })
@@ -122,6 +154,7 @@ export default class ReactDataGridSpreadsheet extends React.Component {
         rowGetter={this.getRow}
         rowsCount={this.state.rows.length}
         enableCellSelect
-        onGridRowsUpdated={this.onGridRowsUpdated} />)
+        onGridRowsUpdated={this.onGridRowsUpdated}
+        minHeight={600} />)
   }
 }

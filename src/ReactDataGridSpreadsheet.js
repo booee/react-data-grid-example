@@ -5,7 +5,6 @@ import { Editors, Formatters } from 'react-data-grid-addons'
 import DateCell from './DateCell'
 
 import 'bootstrap/dist/css/bootstrap.css'
-import 'react-datepicker/dist/react-datepicker.css'
 import './ReactDataGridSpreadsheet.css'
 
 const teams = [
